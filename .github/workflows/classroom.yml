@@ -1,0 +1,70 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: test_extract_text
+      id: test_extract_text
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_extract_text
+        setup-command: pip install -r requirements.txt
+        command: pytest test.py -k 'test_extract_text'
+        timeout: 10
+        max-score: 20
+    - name: test_clean_text
+      id: test_clean_text
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_clean_text
+        setup-command: ''
+        command: pytest test.py -k 'test_clean_text'
+        timeout: 10
+        max-score: 20
+    - name: test_process_text
+      id: test_process_text
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_process_text
+        setup-command: ''
+        command: pytest test.py -k 'test_process_text'
+        timeout: 10
+        max-score: 20
+    - name: test_to_dataframe
+      id: test_to_dataframe
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_to_dataframe
+        setup-command: ''
+        command: pytest test.py -k 'test_to_dataframe'
+        timeout: 10
+        max-score: 20
+    - name: test_customize_tokenizer
+      id: test_customize_tokenizer
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_customize_tokenizer
+        setup-command: ''
+        command: pytest test.py -k 'test_customize_tokenizer'
+        timeout: 10
+        max-score: 20
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TEST_EXTRACT_TEXT_RESULTS: "${{steps.test_extract_text.outputs.result}}"
+        TEST_CLEAN_TEXT_RESULTS: "${{steps.test_clean_text.outputs.result}}"
+        TEST_PROCESS_TEXT_RESULTS: "${{steps.test_process_text.outputs.result}}"
+        TEST_TO_DATAFRAME_RESULTS: "${{steps.test_to_dataframe.outputs.result}}"
+        TEST_CUSTOMIZE_TOKENIZER_RESULTS: "${{steps.test_customize_tokenizer.outputs.result}}"
+      with:
+        runners: test_extract_text,test_clean_text,test_process_text,test_to_dataframe,test_customize_tokenizer
